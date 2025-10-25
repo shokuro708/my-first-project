@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopHub - オンラインショッピング</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --white: #ffffff;
+            --text: #374151;
+            --border: #e5e7eb;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--light);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* ヘッダー */
+        .header {
+            background: var(--white);
+            box-shadow: 0 2px 10px var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-item {
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: var(--light);
+        }
+
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: var(--white);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+        }
+
+        .user-menu {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 認証ページ */
+        .auth-container {
+            max-width: 400px;
+            margin: 4rem auto;
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px var(--shadow);
+        }
+
+        .auth-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--primary);
+            font-size: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-error {
+            color: var(--danger);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .auth-link {
+            color: var(--primary);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* 商品グリッド */
+        .search-bar {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px var(--shadow);
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .category-filters {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            padding: 0.5rem 1rem;
+            background: var(--light);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .category-btn.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .product-card {
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px var(--shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px var(--shadow);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-description {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .icon-btn {
+            padding: 0.5rem;
+            background: var(--light);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.25rem;
+        }
+
+        .icon-btn:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .icon-btn.active {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        /* カート */
+        .cart-container {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px var(--shadow);
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            align-items: center;
+        }
+
+        .cart-item-image {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .quantity-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border: none;
+            background: var(--primary);
+            color: var(--white);
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .cart-summary {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 1.125rem;
+        }
+
+        .summary-row.total {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* 注文履歴 */
+        .order-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 10px var(--shadow);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .order-status {
+            padding: 0.25rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        /* プロフィール */
+        .profile-container {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px var(--shadow);
+            max-width: 600px;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--white);
+            margin: 0 auto 1rem;
+        }
+
+        /* 空の状態 */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .empty-text {
+            color: #6b7280;
+            margin-bottom: 2rem;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+
+            .nav-menu {
+                gap: 1rem;
+            }
+
+            .nav-item {
+                padding: 0.5rem;
+                font-size: 0.875rem;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+
+            .main-content {
+                padding: 0 1rem;
+            }
+        }
+
+        /* 通知 */
+        .notification {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: var(--white);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px var(--shadow);
+            z-index: 2000;
+            animation: slideIn 0.3s;
+            border-left: 4px solid var(--success);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo" onclick="app.showPage('home')">🛍️ ShopHub</div>
+
+            <div class="nav-menu" id="mainNav">
+                <div class="nav-item" onclick="app.showPage('home')">ホーム</div>
+                <div class="nav-item" onclick="app.showPage('cart')">
+                    🛒 カート
+                    <span class="badge" id="cartBadge">0</span>
+                </div>
+                <div class="nav-item" onclick="app.showPage('favorites')">
+                    ❤️ お気に入り
+                    <span class="badge" id="favoritesBadge">0</span>
+                </div>
+                <div class="nav-item" onclick="app.showPage('orders')">📦 注文履歴</div>
+                <div class="nav-item" onclick="app.showPage('profile')">👤 プロフィール</div>
+            </div>
+
+            <div class="user-menu" id="userMenu">
+                <button class="btn btn-outline" onclick="app.logout()">ログアウト</button>
+            </div>
+
+            <div class="user-menu hidden" id="guestMenu">
+                <button class="btn btn-outline" onclick="app.showAuth('login')">ログイン</button>
+                <button class="btn btn-primary" onclick="app.showAuth('register')">新規登録</button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="main-content">
+        <!-- 認証ページ -->
+        <div id="authPage" class="page">
+            <div class="auth-container">
+                <h2 class="auth-title" id="authTitle">ログイン</h2>
+                <form id="authForm" onsubmit="app.handleAuth(event)">
+                    <div class="form-group" id="nameGroup" style="display: none;">
+                        <label class="form-label">お名前</label>
+                        <input type="text" id="nameInput" class="form-input" placeholder="山田太郎">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">メールアドレス</label>
+                        <input type="email" id="emailInput" class="form-input" placeholder="example@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">パスワード</label>
+                        <input type="password" id="passwordInput" class="form-input" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;" id="authSubmitBtn">ログイン</button>
+                </form>
+                <div class="auth-switch">
+                    <span id="authSwitchText">アカウントをお持ちでない方は</span>
+                    <span class="auth-link" onclick="app.toggleAuthMode()">新規登録</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ホーム（商品一覧）ページ -->
+        <div id="homePage" class="page active">
+            <div class="search-bar">
+                <input type="text" class="search-input" id="searchInput" placeholder="商品を検索..." oninput="app.filterProducts()">
+                <div class="category-filters" id="categoryFilters"></div>
+            </div>
+            <div class="products-grid" id="productsGrid"></div>
+        </div>
+
+        <!-- カートページ -->
+        <div id="cartPage" class="page">
+            <div class="cart-container">
+                <h2 style="margin-bottom: 2rem;">ショッピングカート</h2>
+                <div id="cartItems"></div>
+                <div id="cartSummary"></div>
+            </div>
+        </div>
+
+        <!-- お気に入りページ -->
+        <div id="favoritesPage" class="page">
+            <div class="cart-container">
+                <h2 style="margin-bottom: 2rem;">お気に入り商品</h2>
+                <div class="products-grid" id="favoritesGrid"></div>
+            </div>
+        </div>
+
+        <!-- 注文履歴ページ -->
+        <div id="ordersPage" class="page">
+            <h2 style="margin-bottom: 2rem;">注文履歴</h2>
+            <div id="ordersContainer"></div>
+        </div>
+
+        <!-- プロフィールページ -->
+        <div id="profilePage" class="page">
+            <div class="profile-container">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profileAvatar">👤</div>
+                    <h2 id="profileName">ゲスト</h2>
+                    <p id="profileEmail">guest@example.com</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">お名前</label>
+                    <input type="text" class="form-input" id="profileNameInput">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">メールアドレス</label>
+                    <input type="email" class="form-input" id="profileEmailInput">
+                </div>
+                <button class="btn btn-primary" onclick="app.updateProfile()">プロフィールを更新</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // アプリケーションのメインクラス
+        class ShopHubApp {
+            constructor() {
+                this.currentUser = null;
+                this.products = [];
+                this.cart = [];
+                this.favorites = [];
+                this.orders = [];
+                this.currentCategory = 'all';
+                this.authMode = 'login';
+
+                this.init();
+            }
+
+            init() {
+                // LocalStorageからデータを読み込み
+                this.loadData();
+                // サンプル商品データを生成
+                this.initializeProducts();
+                // UIを初期化
+                this.updateUI();
+                // 認証状態をチェック
+                this.checkAuth();
+            }
+
+            loadData() {
+                const savedUser = localStorage.getItem('shophub_user');
+                if (savedUser) {
+                    this.currentUser = JSON.parse(savedUser);
+                }
+
+                const savedCart = localStorage.getItem('shophub_cart');
+                if (savedCart) {
+                    this.cart = JSON.parse(savedCart);
+                }
+
+                const savedFavorites = localStorage.getItem('shophub_favorites');
+                if (savedFavorites) {
+                    this.favorites = JSON.parse(savedFavorites);
+                }
+
+                const savedOrders = localStorage.getItem('shophub_orders');
+                if (savedOrders) {
+                    this.orders = JSON.parse(savedOrders);
+                }
+            }
+
+            saveData() {
+                if (this.currentUser) {
+                    localStorage.setItem('shophub_user', JSON.stringify(this.currentUser));
+                }
+                localStorage.setItem('shophub_cart', JSON.stringify(this.cart));
+                localStorage.setItem('shophub_favorites', JSON.stringify(this.favorites));
+                localStorage.setItem('shophub_orders', JSON.stringify(this.orders));
+            }
+
+            initializeProducts() {
+                // 既に商品データがある場合はスキップ
+                if (this.products.length > 0) return;
+
+                const categories = ['電子機器', 'ファッション', '本・雑誌', 'スポーツ', '食品', 'インテリア'];
+                const icons = ['📱', '👔', '📚', '⚽', '🍔', '🛋️'];
+
+                this.products = [
+                    { id: 1, name: 'スマートフォン Pro', category: '電子機器', price: 89800, icon: '📱', description: '最新の高性能スマートフォン' },
+                    { id: 2, name: 'ワイヤレスイヤホン', category: '電子機器', price: 15800, icon: '🎧', description: 'ノイズキャンセリング機能搭載' },
+                    { id: 3, name: 'カジュアルシャツ', category: 'ファッション', price: 4800, icon: '👕', description: '快適な着心地のシャツ' },
+                    { id: 4, name: 'スニーカー', category: 'ファッション', price: 8900, icon: '👟', description: 'おしゃれで履きやすい' },
+                    { id: 5, name: 'ビジネス書籍セット', category: '本・雑誌', price: 3200, icon: '📚', description: 'ベストセラー3冊セット' },
+                    { id: 6, name: '料理レシピ本', category: '本・雑誌', price: 1800, icon: '📖', description: '初心者でも簡単に作れる' },
+                    { id: 7, name: 'ヨガマット', category: 'スポーツ', price: 3500, icon: '🧘', description: 'エクササイズに最適' },
+                    { id: 8, name: 'ランニングシューズ', category: 'スポーツ', price: 12800, icon: '🏃', description: 'プロ仕様の軽量シューズ' },
+                    { id: 9, name: 'オーガニックコーヒー', category: '食品', price: 2400, icon: '☕', description: '香り豊かなコーヒー豆' },
+                    { id: 10, name: 'グルメギフトセット', category: '食品', price: 5800, icon: '🎁', description: '贈り物に最適' },
+                    { id: 11, name: 'デザイナーズチェア', category: 'インテリア', price: 28000, icon: '🪑', description: 'モダンなデザイン' },
+                    { id: 12, name: 'テーブルランプ', category: 'インテリア', price: 6800, icon: '💡', description: '温かい光で癒しの空間' },
+                ];
+            }
+
+            checkAuth() {
+                if (this.currentUser) {
+                    document.getElementById('userMenu').classList.remove('hidden');
+                    document.getElementById('guestMenu').classList.add('hidden');
+                    document.getElementById('mainNav').classList.remove('hidden');
+                    this.showPage('home');
+                } else {
+                    document.getElementById('userMenu').classList.add('hidden');
+                    document.getElementById('guestMenu').classList.remove('hidden');
+                    document.getElementById('mainNav').classList.add('hidden');
+                    this.showPage('auth');
+                }
+            }
+
+            showAuth(mode) {
+                this.authMode = mode;
+                if (mode === 'login') {
+                    document.getElementById('authTitle').textContent = 'ログイン';
+                    document.getElementById('nameGroup').style.display = 'none';
+                    document.getElementById('authSubmitBtn').textContent = 'ログイン';
+                    document.getElementById('authSwitchText').textContent = 'アカウントをお持ちでない方は';
+                } else {
+                    document.getElementById('authTitle').textContent = '新規登録';
+                    document.getElementById('nameGroup').style.display = 'block';
+                    document.getElementById('authSubmitBtn').textContent = '登録する';
+                    document.getElementById('authSwitchText').textContent = 'すでにアカウントをお持ちの方は';
+                }
+                this.showPage('auth');
+            }
+
+            toggleAuthMode() {
+                this.showAuth(this.authMode === 'login' ? 'register' : 'login');
+            }
+
+            handleAuth(event) {
+                event.preventDefault();
+
+                const email = document.getElementById('emailInput').value;
+                const password = document.getElementById('passwordInput').value;
+                const name = document.getElementById('nameInput').value;
+
+                if (this.authMode === 'register') {
+                    // 新規登録
+                    if (!name) {
+                        this.showNotification('お名前を入力してください', 'error');
+                        return;
+                    }
+
+                    this.currentUser = {
+                        id: Date.now(),
+                        name: name,
+                        email: email,
+                        createdAt: new Date().toISOString()
+                    };
+
+                    this.saveData();
+                    this.showNotification('登録が完了しました！');
+                } else {
+                    // ログイン（簡易版）
+                    this.currentUser = {
+                        id: Date.now(),
+                        name: 'ゲストユーザー',
+                        email: email
+                    };
+
+                    this.saveData();
+                    this.showNotification('ログインしました！');
+                }
+
+                this.checkAuth();
+                this.updateUI();
+            }
+
+            logout() {
+                this.currentUser = null;
+                localStorage.removeItem('shophub_user');
+                this.showNotification('ログアウトしました');
+                this.checkAuth();
+            }
+
+            showPage(pageName) {
+                // すべてのページを非表示
+                document.querySelectorAll('.page').forEach(page => {
+                    page.classList.remove('active');
+                });
+
+                // 指定されたページを表示
+                const pageMap = {
+                    'auth': 'authPage',
+                    'home': 'homePage',
+                    'cart': 'cartPage',
+                    'favorites': 'favoritesPage',
+                    'orders': 'ordersPage',
+                    'profile': 'profilePage'
+                };
+
+                const pageId = pageMap[pageName];
+                if (pageId) {
+                    document.getElementById(pageId).classList.add('active');
+                }
+
+                // ページごとの更新
+                if (pageName === 'home') {
+                    this.renderProducts();
+                    this.renderCategoryFilters();
+                } else if (pageName === 'cart') {
+                    this.renderCart();
+                } else if (pageName === 'favorites') {
+                    this.renderFavorites();
+                } else if (pageName === 'orders') {
+                    this.renderOrders();
+                } else if (pageName === 'profile') {
+                    this.renderProfile();
+                }
+            }
+
+            renderCategoryFilters() {
+                const categories = ['all', ...new Set(this.products.map(p => p.category))];
+                const html = categories.map(cat => `
+                    <button class="category-btn ${this.currentCategory === cat ? 'active' : ''}"
+                            onclick="app.filterByCategory('${cat}')">
+                        ${cat === 'all' ? 'すべて' : cat}
+                    </button>
+                `).join('');
+
+                document.getElementById('categoryFilters').innerHTML = html;
+            }
+
+            filterByCategory(category) {
+                this.currentCategory = category;
+                this.renderProducts();
+                this.renderCategoryFilters();
+            }
+
+            filterProducts() {
+                this.renderProducts();
+            }
+
+            renderProducts() {
+                const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+                let filtered = this.products;
+
+                // カテゴリーフィルター
+                if (this.currentCategory !== 'all') {
+                    filtered = filtered.filter(p => p.category === this.currentCategory);
+                }
+
+                // 検索フィルター
+                if (searchTerm) {
+                    filtered = filtered.filter(p =>
+                        p.name.toLowerCase().includes(searchTerm) ||
+                        p.description.toLowerCase().includes(searchTerm)
+                    );
+                }
+
+                const html = filtered.map(product => {
+                    const isFavorite = this.favorites.includes(product.id);
+                    return `
+                        <div class="product-card">
+                            <div class="product-image">${product.icon}</div>
+                            <div class="product-info">
+                                <div class="product-name">${product.name}</div>
+                                <div class="product-description">${product.description}</div>
+                                <div class="product-price">¥${product.price.toLocaleString()}</div>
+                                <div class="product-actions">
+                                    <button class="btn btn-primary" style="flex: 1;" onclick="app.addToCart(${product.id})">
+                                        🛒 カートに追加
+                                    </button>
+                                    <button class="icon-btn ${isFavorite ? 'active' : ''}"
+                                            onclick="app.toggleFavorite(${product.id})">
+                                        ❤️
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                document.getElementById('productsGrid').innerHTML = html || '<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-text">商品が見つかりませんでした</div></div>';
+            }
+
+            addToCart(productId) {
+                const existing = this.cart.find(item => item.productId === productId);
+
+                if (existing) {
+                    existing.quantity++;
+                } else {
+                    this.cart.push({
+                        productId: productId,
+                        quantity: 1
+                    });
+                }
+
+                this.saveData();
+                this.updateUI();
+                this.showNotification('カートに追加しました！');
+            }
+
+            removeFromCart(productId) {
+                this.cart = this.cart.filter(item => item.productId !== productId);
+                this.saveData();
+                this.updateUI();
+                this.renderCart();
+            }
+
+            updateQuantity(productId, change) {
+                const item = this.cart.find(item => item.productId === productId);
+                if (item) {
+                    item.quantity += change;
+                    if (item.quantity <= 0) {
+                        this.removeFromCart(productId);
+                    } else {
+                        this.saveData();
+                        this.renderCart();
+                    }
+                }
+            }
+
+            renderCart() {
+                if (this.cart.length === 0) {
+                    document.getElementById('cartItems').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">🛒</div>
+                            <div class="empty-text">カートは空です</div>
+                            <button class="btn btn-primary" onclick="app.showPage('home')">買い物を続ける</button>
+                        </div>
+                    `;
+                    document.getElementById('cartSummary').innerHTML = '';
+                    return;
+                }
+
+                const itemsHtml = this.cart.map(item => {
+                    const product = this.products.find(p => p.id === item.productId);
+                    const subtotal = product.price * item.quantity;
+
+                    return `
+                        <div class="cart-item">
+                            <div class="cart-item-image">${product.icon}</div>
+                            <div class="cart-item-info">
+                                <div class="product-name">${product.name}</div>
+                                <div class="product-price">¥${product.price.toLocaleString()}</div>
+                                <div class="quantity-controls">
+                                    <button class="quantity-btn" onclick="app.updateQuantity(${product.id}, -1)">-</button>
+                                    <span style="margin: 0 1rem;">${item.quantity}</span>
+                                    <button class="quantity-btn" onclick="app.updateQuantity(${product.id}, 1)">+</button>
+                                    <span style="margin-left: auto; font-weight: bold;">¥${subtotal.toLocaleString()}</span>
+                                </div>
+                            </div>
+                            <button class="btn btn-danger" onclick="app.removeFromCart(${product.id})">削除</button>
+                        </div>
+                    `;
+                }).join('');
+
+                const total = this.cart.reduce((sum, item) => {
+                    const product = this.products.find(p => p.id === item.productId);
+                    return sum + (product.price * item.quantity);
+                }, 0);
+
+                const summaryHtml = `
+                    <div class="cart-summary">
+                        <div class="summary-row">
+                            <span>小計</span>
+                            <span>¥${total.toLocaleString()}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>送料</span>
+                            <span>¥500</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>合計</span>
+                            <span>¥${(total + 500).toLocaleString()}</span>
+                        </div>
+                        <button class="btn btn-success" style="width: 100%; margin-top: 1rem; padding: 1rem;"
+                                onclick="app.checkout()">
+                            注文を確定する
+                        </button>
+                    </div>
+                `;
+
+                document.getElementById('cartItems').innerHTML = itemsHtml;
+                document.getElementById('cartSummary').innerHTML = summaryHtml;
+            }
+
+            checkout() {
+                if (this.cart.length === 0) return;
+
+                const order = {
+                    id: Date.now(),
+                    items: [...this.cart],
+                    total: this.cart.reduce((sum, item) => {
+                        const product = this.products.find(p => p.id === item.productId);
+                        return sum + (product.price * item.quantity);
+                    }, 0) + 500,
+                    status: 'completed',
+                    date: new Date().toISOString()
+                };
+
+                this.orders.push(order);
+                this.cart = [];
+                this.saveData();
+                this.updateUI();
+
+                this.showNotification('注文が完了しました！ありがとうございます。');
+                this.showPage('orders');
+            }
+
+            toggleFavorite(productId) {
+                const index = this.favorites.indexOf(productId);
+
+                if (index > -1) {
+                    this.favorites.splice(index, 1);
+                    this.showNotification('お気に入りから削除しました');
+                } else {
+                    this.favorites.push(productId);
+                    this.showNotification('お気に入りに追加しました');
+                }
+
+                this.saveData();
+                this.updateUI();
+                this.renderProducts();
+            }
+
+            renderFavorites() {
+                const favoriteProducts = this.products.filter(p => this.favorites.includes(p.id));
+
+                if (favoriteProducts.length === 0) {
+                    document.getElementById('favoritesGrid').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">❤️</div>
+                            <div class="empty-text">お気に入り商品はまだありません</div>
+                            <button class="btn btn-primary" onclick="app.showPage('home')">商品を見る</button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const html = favoriteProducts.map(product => `
+                    <div class="product-card">
+                        <div class="product-image">${product.icon}</div>
+                        <div class="product-info">
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-description">${product.description}</div>
+                            <div class="product-price">¥${product.price.toLocaleString()}</div>
+                            <div class="product-actions">
+                                <button class="btn btn-primary" style="flex: 1;" onclick="app.addToCart(${product.id})">
+                                    🛒 カートに追加
+                                </button>
+                                <button class="icon-btn active" onclick="app.toggleFavorite(${product.id})">
+                                    ❤️
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                document.getElementById('favoritesGrid').innerHTML = html;
+            }
+
+            renderOrders() {
+                if (this.orders.length === 0) {
+                    document.getElementById('ordersContainer').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">📦</div>
+                            <div class="empty-text">注文履歴はまだありません</div>
+                            <button class="btn btn-primary" onclick="app.showPage('home')">買い物を始める</button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const html = this.orders.slice().reverse().map(order => {
+                    const date = new Date(order.date).toLocaleDateString('ja-JP');
+                    const itemsHtml = order.items.map(item => {
+                        const product = this.products.find(p => p.id === item.productId);
+                        return `<div>${product.name} × ${item.quantity}</div>`;
+                    }).join('');
+
+                    return `
+                        <div class="order-card">
+                            <div class="order-header">
+                                <div>
+                                    <div style="font-weight: bold;">注文番号: #${order.id}</div>
+                                    <div style="color: #6b7280; font-size: 0.875rem;">${date}</div>
+                                </div>
+                                <div class="order-status status-${order.status}">
+                                    ${order.status === 'completed' ? '配送完了' : '処理中'}
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                ${itemsHtml}
+                            </div>
+                            <div style="font-size: 1.25rem; font-weight: bold; color: var(--primary);">
+                                合計: ¥${order.total.toLocaleString()}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                document.getElementById('ordersContainer').innerHTML = html;
+            }
+
+            renderProfile() {
+                if (!this.currentUser) return;
+
+                document.getElementById('profileName').textContent = this.currentUser.name;
+                document.getElementById('profileEmail').textContent = this.currentUser.email;
+                document.getElementById('profileAvatar').textContent = this.currentUser.name.charAt(0);
+                document.getElementById('profileNameInput').value = this.currentUser.name;
+                document.getElementById('profileEmailInput').value = this.currentUser.email;
+            }
+
+            updateProfile() {
+                const newName = document.getElementById('profileNameInput').value;
+                const newEmail = document.getElementById('profileEmailInput').value;
+
+                if (!newName || !newEmail) {
+                    this.showNotification('すべての項目を入力してください', 'error');
+                    return;
+                }
+
+                this.currentUser.name = newName;
+                this.currentUser.email = newEmail;
+                this.saveData();
+                this.renderProfile();
+                this.showNotification('プロフィールを更新しました！');
+            }
+
+            updateUI() {
+                // カートバッジ
+                const cartCount = this.cart.reduce((sum, item) => sum + item.quantity, 0);
+                document.getElementById('cartBadge').textContent = cartCount;
+
+                // お気に入りバッジ
+                document.getElementById('favoritesBadge').textContent = this.favorites.length;
+            }
+
+            showNotification(message, type = 'success') {
+                const notification = document.createElement('div');
+                notification.className = 'notification';
+                notification.textContent = message;
+
+                if (type === 'error') {
+                    notification.style.borderLeftColor = 'var(--danger)';
+                }
+
+                document.body.appendChild(notification);
+
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+        }
+
+        // アプリケーションを初期化
+        const app = new ShopHubApp();
+    </script>
+</body>
+</html>
