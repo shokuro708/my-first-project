@@ -152,12 +152,36 @@
 
         <div class="stats">
             <p>全タスク: <span id="totalTasks">0</span> | 完了: <span id="completedTasks">0</span></p>
+            <p style="margin-top: 10px; font-size: 12px; color: #999;">
+                💾 データは自動保存されます
+                <button onclick="clearAllTodos()" style="margin-left: 10px; padding: 4px 8px; font-size: 12px; background: #dc3545;">全削除</button>
+            </p>
         </div>
     </div>
 
     <script>
         let todos = [];
         let currentFilter = 'all';
+        const STORAGE_KEY = 'claude-todo-app-data';
+
+        // ローカルストレージからデータを読み込み
+        function loadTodos() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    todos = JSON.parse(saved);
+                    renderTodos();
+                } catch (e) {
+                    console.error('データの読み込みに失敗しました', e);
+                    todos = [];
+                }
+            }
+        }
+
+        // ローカルストレージにデータを保存
+        function saveTodos() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+        }
 
         // ToDoを追加
         function addTodo() {
@@ -178,6 +202,7 @@
 
             todos.push(todo);
             input.value = '';
+            saveTodos();
             renderTodos();
         }
 
@@ -186,6 +211,7 @@
             const todo = todos.find(t => t.id === id);
             if (todo) {
                 todo.completed = !todo.completed;
+                saveTodos();
                 renderTodos();
             }
         }
@@ -193,7 +219,17 @@
         // ToDoを削除
         function deleteTodo(id) {
             todos = todos.filter(t => t.id !== id);
+            saveTodos();
             renderTodos();
+        }
+
+        // 全てのToDoを削除
+        function clearAllTodos() {
+            if (confirm('本当に全てのタスクを削除しますか？')) {
+                todos = [];
+                saveTodos();
+                renderTodos();
+            }
         }
 
         // ToDoリストを描画
@@ -253,6 +289,11 @@
             if (e.key === 'Enter') {
                 addTodo();
             }
+        });
+
+        // ページ読み込み時にデータを復元
+        window.addEventListener('DOMContentLoaded', function() {
+            loadTodos();
         });
     </script>
 </body>
