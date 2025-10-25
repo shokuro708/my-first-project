@@ -130,12 +130,87 @@
             text-align: center;
             color: #666;
         }
+
+        /* ダークモードトグル */
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        /* ダークモードスタイル */
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        body.dark-mode .container {
+            background: #0f3460;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode h1 {
+            color: #53a8fb;
+        }
+
+        body.dark-mode .subtitle {
+            color: #b0b0b0;
+        }
+
+        body.dark-mode #todoInput {
+            background: #1a1a2e;
+            color: #e0e0e0;
+            border-color: #53a8fb;
+        }
+
+        body.dark-mode button {
+            background: #53a8fb;
+        }
+
+        body.dark-mode button:hover {
+            background: #3d8fd1;
+        }
+
+        body.dark-mode .todo-item {
+            background: #1a1a2e;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .todo-item:hover {
+            background: #16213e;
+        }
+
+        body.dark-mode .stats {
+            border-top-color: #53a8fb;
+            color: #b0b0b0;
+        }
+
+        body.dark-mode .delete-btn {
+            background: #e94560;
+        }
+
+        body.dark-mode .delete-btn:hover {
+            background: #c23b52;
+        }
     </style>
 </head>
 <body>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">🌙</button>
+
     <div class="container">
         <h1>ToDoアプリ</h1>
-        <p class="subtitle">Claude Code 機能デモ</p>
+        <p class="subtitle">Claude Code 機能デモ - ブランチ戦略</p>
 
         <div class="input-container">
             <input type="text" id="todoInput" placeholder="新しいタスクを入力...">
@@ -291,9 +366,38 @@
             }
         });
 
+        // ダークモード切り替え
+        function toggleTheme() {
+            const body = document.body;
+            const toggle = document.getElementById('themeToggle');
+
+            body.classList.toggle('dark-mode');
+
+            // アイコンを切り替え
+            if (body.classList.contains('dark-mode')) {
+                toggle.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                toggle.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // テーマを復元
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const toggle = document.getElementById('themeToggle');
+
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                toggle.textContent = '☀️';
+            }
+        }
+
         // ページ読み込み時にデータを復元
         window.addEventListener('DOMContentLoaded', function() {
             loadTodos();
+            loadTheme();
         });
     </script>
 </body>
