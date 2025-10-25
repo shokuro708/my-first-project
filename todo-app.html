@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code チュートリアル - ToDoアプリ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #todoInput {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        #todoInput:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #5568d3;
+        }
+
+        #todoList {
+            list-style: none;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .todo-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .todo-item.completed {
+            opacity: 0.6;
+        }
+
+        .todo-item.completed span {
+            text-decoration: line-through;
+        }
+
+        .todo-item input[type="checkbox"] {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .todo-item span {
+            flex: 1;
+            font-size: 16px;
+        }
+
+        .delete-btn {
+            padding: 6px 12px;
+            background: #dc3545;
+            font-size: 14px;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+        }
+
+        .stats {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ToDoアプリ</h1>
+        <p class="subtitle">Claude Code 機能デモ</p>
+
+        <div class="input-container">
+            <input type="text" id="todoInput" placeholder="新しいタスクを入力...">
+            <button onclick="addTodo()">追加</button>
+        </div>
+
+        <div class="filter-container" style="margin-bottom: 20px; text-align: center;">
+            <button onclick="setFilter('all')" id="filterAll" style="margin: 0 5px;">全て</button>
+            <button onclick="setFilter('active')" id="filterActive" style="margin: 0 5px; background: #6c757d;">未完了</button>
+            <button onclick="setFilter('completed')" id="filterCompleted" style="margin: 0 5px; background: #6c757d;">完了済み</button>
+        </div>
+
+        <ul id="todoList"></ul>
+
+        <div class="stats">
+            <p>全タスク: <span id="totalTasks">0</span> | 完了: <span id="completedTasks">0</span></p>
+        </div>
+    </div>
+
+    <script>
+        let todos = [];
+        let currentFilter = 'all';
+
+        // ToDoを追加
+        function addTodo() {
+            const input = document.getElementById('todoInput');
+            const text = input.value.trim();
+
+            // 空文字チェックを追加
+            if (text === '') {
+                alert('タスクを入力してください！');
+                return;
+            }
+
+            const todo = {
+                id: Date.now(),
+                text: text,
+                completed: false
+            };
+
+            todos.push(todo);
+            input.value = '';
+            renderTodos();
+        }
+
+        // ToDoの完了状態を切り替え
+        function toggleTodo(id) {
+            const todo = todos.find(t => t.id === id);
+            if (todo) {
+                todo.completed = !todo.completed;
+                renderTodos();
+            }
+        }
+
+        // ToDoを削除
+        function deleteTodo(id) {
+            todos = todos.filter(t => t.id !== id);
+            renderTodos();
+        }
+
+        // ToDoリストを描画
+        function renderTodos() {
+            const list = document.getElementById('todoList');
+            list.innerHTML = '';
+
+            // フィルター処理
+            let filteredTodos = todos;
+            if (currentFilter === 'active') {
+                filteredTodos = todos.filter(t => !t.completed);
+            } else if (currentFilter === 'completed') {
+                filteredTodos = todos.filter(t => t.completed);
+            }
+
+            filteredTodos.forEach(todo => {
+                const li = document.createElement('li');
+                li.className = 'todo-item' + (todo.completed ? ' completed' : '');
+
+                li.innerHTML = `
+                    <input type="checkbox" ${todo.completed ? 'checked' : ''}
+                           onchange="toggleTodo(${todo.id})">
+                    <span>${todo.text}</span>
+                    <button class="delete-btn" onclick="deleteTodo(${todo.id})">削除</button>
+                `;
+
+                list.appendChild(li);
+            });
+
+            // 統計を更新
+            updateStats();
+        }
+
+        // 統計を更新
+        function updateStats() {
+            const total = todos.length;
+            const completed = todos.filter(t => t.completed).length;
+
+            document.getElementById('totalTasks').textContent = total;
+            document.getElementById('completedTasks').textContent = completed;
+        }
+
+        // フィルターを設定
+        function setFilter(filter) {
+            currentFilter = filter;
+
+            // ボタンのスタイルを更新
+            document.getElementById('filterAll').style.background = filter === 'all' ? '#667eea' : '#6c757d';
+            document.getElementById('filterActive').style.background = filter === 'active' ? '#667eea' : '#6c757d';
+            document.getElementById('filterCompleted').style.background = filter === 'completed' ? '#667eea' : '#6c757d';
+
+            renderTodos();
+        }
+
+        // Enterキーで追加
+        document.getElementById('todoInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addTodo();
+            }
+        });
+    </script>
+</body>
+</html>
